@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="./config.js"; token=""></script>
+</head>
+<body>
+<h1>Now the user has logged in. This page is the application itself.</h1>
+<h3>
+    Notice how we are redirected to the callback URL.
+    <br>
+    Authorization code was received as a query parameter.
+</h3>
+<br>
+<button onclick="reveal(&quot;step3&quot;)">Show step 3</button>
+<div id="step3" style="display: none;">
+    <h2>
+    <hr>
+    <br>
+        Step 3: Exchange the authorization code for access token by sending a HTTP POST request to ELIXIR token
+        endpoint:
+        <script type="text/javascript">
+            document.write(token_url)
+        </script>
+    </h2>
+    <h3>The following query parameters are used:</h3>
+    <table style="width:100%">
+        <tr>
+            <td>code</td>
+            <td>The authorization code retrieved in previous step (Notice the code in the address bar)</td>
+        </tr>
+        <tr>
+            <td>redirect_uri</td>
+            <td>http://localhost/callback.html (The same URL as in previous step)</td>
+        </tr>
+        <tr>
+            <td>client_id</td>
+        </tr>
+        <tr>
+            <td>client_secret</td>
+        </tr>
+        <tr>
+            <td>grant_type</td>
+            <td>authorization_code</td>
+        </tr>
+        <tr>
+            <td>scope</td>
+            <td>openid</td>
+        </tr>
+    </table>
+    <br><br>
+
+    <button onclick="fetch_token()">Fetch Access Token</button>
+</div>
+
+<div id="httpresponse_div" style="display: none;">
+    <br>
+    <!--The HTTP POST response:
+    <p id="httpresponse_p"></p>-->
+    <button onclick="reveal(&quot;step4_div&quot;)">Show step 4</button>
+</div>
+
+<div id="step4_div" style="display: none;">
+    <br>
+    <hr>
+    <br>
+    <h2>
+        Step 4: Fetch userinfo using access token by sending HTTP GET request to endpoint:
+        <script type="text/javascript">
+            document.write(user_url)
+        </script>
+    </h2>
+        No query parameters needed, but a authorization header has to be in place: "Authorization: Bearer
+        PLACE_THE_ACCESS_TOKEN_HERE"
+    <br>
+    <br>
+
+    <button onclick="fetch_userinfo()">Fetch userinfo</button>
+</div>
+
+<script>
+    // Exchange access token for user info
+    function fetch_userinfo(){
+        var http_userinfo = new XMLHttpRequest();
+        http_userinfo.timeout = 2000;
+        http_userinfo.open("GET", user_url, true);
+        http_userinfo.setRequestHeader("Authorization", "Bearer" + token);
+        http_userinfo.send();
+    }
+
+    // Exchange authorization code for access token
+    function fetch_token(){
+        var query_vars = window.location.search.substring(1);
+        var query_vars_array = query_vars.split('&');
+        // Extract code and state parameters from query parameters
+        for (var i = 0; i < query_vars_array.length; i++)
+        {
+            var query_var = query_vars_array[i].split('=');
+            if (query_var[0] == "code"){
+               var code = query_var[1]
+            }
+            if (query_var[0] == "state"){
+               var state = query_var[1]
+            }
+        }
+        var http_request = new XMLHttpRequest();
+        var url = token_url.concat("?code=", code, "&state=", state, "&scope=", scope, "&grant_type=", grant_type, "&redirect_uri=", redirect_uri, "&client_id=", client_id, "&client_secret=", client_secret);
+
+        http_request.timeout = 2000;
+        http_request.onreadystatechange = function(e) {
+            if (http_request.readyState === 4) {
+                token = http_request.response.split("\"")[3];
+                reveal("httpresponse_div")
+          }
+        }
+        http_request.open("POST", url, true);
+        http_request.send()
+    }
+</script>
+</body>
+</html>
+

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="./config.js"></script>
+</head>
+<body>
+<h2>Preliminary steps: Register your application to Elixir AAI.</h2>
+<h3>For integrating your application to ELIXIR AAI the following parameters are required:</h3>
+<table style="width:100%">
+  <tr>
+    <td>client_id</td>
+    <td>Provided by ELIXIR AAI while registering your application</td>
+  </tr>
+  <tr>
+    <td>client_secret</td>
+    <td>Provided by ELIXIR AAI while registering your application</td>
+  </tr>
+  <tr>
+    <td>redired_uri</td>
+    <td>Set by you while registering your application to ELIXIR AAI. The URL(s) where users may be redirected after login</td>
+  </tr>
+  <tr>
+    <td>scope</td>
+    <td>Set by you while registering your application to ELIXIR AAI. Scope defines parameters which ELIXIR AAI provides to your application</td>
+  </tr>
+</table>
+
+<br>
+
+<button onclick="reveal(&quot;step1_div&quot;)">Show step 1</button>
+<div id="step1_div" style="display: none;">
+    <br><br><br>
+    <hr>
+    <br>
+    <h1>This page is the front page of an application. The user has not logged in.</h1>
+    <br>
+    <hr>
+    <br><br>
+    <h2>
+        Step1: Redirect the user to ELIXIR AAI authorization endpoint for the purpose of user loggin in. This is done
+        by sending HTTP GET request to
+        <script type="text/javascript">
+            document.write(auth_url)
+        </script>
+    </h2>
+    <br>
+
+    <h3>The following query parameters are used:</h3>
+    <table style="width:100%">
+        <tr>
+            <td>client_id</td>
+            <!--<td>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-->
+        </tr>
+        <tr>
+            <td>redirect_uri</td>
+            <td>http://localhost/callback.html (<b>NOTICE the URL!</b>)</td>
+        <tr>
+        <tr>
+            <td>scope</td>
+            <td>openid</td>
+        </tr>
+        <tr>
+            <td>response_type</td>
+            <td>code</td>
+        </tr>
+    </table>
+<!--    <h2>The request:</h2>
+        HTTP GET https://login.elixir-czech.org/oidc/authorize?client_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&amp;redirect_uri=http//localhost/callback.html%20&amp;response_type=code&amp;scope=oidc
+    <br>--><br><br>
+    <button onclick="redirect()">Redirect the user to ELIXIR authorization endpoint</button>
+</div>
+
+<script>
+function redirect(){
+    var state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    var url = auth_url.concat("?client_id=", client_id, "&redirect_uri=", redirect_uri, "&response_type=", response_type, "&scope=", scope)//, "&state=", state)
+
+  location.replace(url);
+}
+</script>
+
+</body>
+</html>
